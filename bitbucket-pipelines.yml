@@ -37,11 +37,9 @@ pipelines:
           - git remote set-url origin https://${GitHub_User}:${GitHub_Token}@github.com/navacamicie/candidate-release.git
           - git add .
           - git commit -a -m "auto build ${BITBUCKET_BUILD_NUMBER}"
-          - ./versiontag current
-          - git push -f; git push --tags
-          - git checkout -b master
-          - git merge ${BITBUCKET_BRANCH}
-          - git push -f; git push --tags
+          - export git_last_tag=$(git describe --abbrev=0); echo ${git_last_tag}
+          - git push -f origin ${BITBUCKET_BRANCH}:master
+          - git push -f origin ${git_last_tag}
 
     feature/*:
     - step: *build
@@ -56,11 +54,9 @@ pipelines:
           - git remote set-url origin https://${GitHub_User}:${GitHub_Token}@github.com/navacamicie/sandbox.git
           - git add .
           - git commit -a -m "auto build ${BITBUCKET_BUILD_NUMBER}"
-          - ./versiontag current
-          - git push -f; git push --tags
-          - git checkout -b master
-          - git merge ${BITBUCKET_BRANCH}
-          - git push -f; git push --tags
+          - export git_last_tag=$(git describe --abbrev=0); echo ${git_last_tag}
+          - git push -f origin ${BITBUCKET_BRANCH}:master
+          - git push -f origin ${git_last_tag}
 
     develop:
     - step: *build
@@ -75,11 +71,9 @@ pipelines:
           - git remote set-url origin https://${GitHub_User}:${GitHub_Token}@github.com/navacamicie/staging.git
           - git add .
           - git commit -a -m "auto build ${BITBUCKET_BUILD_NUMBER}"
-          - ./versiontag current
-          - git push -f; git push --tags
-          - git checkout -b master
-          - git merge ${BITBUCKET_BRANCH}
-          - git push -f; git push --tags
+          - export git_last_tag=$(git describe --abbrev=0); echo ${git_last_tag}
+          - git push -f origin ${BITBUCKET_BRANCH}:master
+          - git push -f origin ${git_last_tag}
 
     master:
     - step: *build
@@ -88,9 +82,13 @@ pipelines:
         deployment: production
         trigger: manual
         script:
+          - ./versiontag current
+          - ./versiontag major  -m "auto build ${BITBUCKET_BUILD_NUMBER}" --force
           - git remote set-url origin https://${GitHub_User}:${GitHub_Token}@github.com/navacamicie/navacamicie.github.io.git
           - git add .
           - git commit -a -m "auto build ${BITBUCKET_BUILD_NUMBER}"
-          - git push -f; git push --tags
+          - export git_last_tag=$(git describe --abbrev=0); echo ${git_last_tag}
+          - git push -f origin ${BITBUCKET_BRANCH}:master
+          - git push -f origin ${git_last_tag}
 
 
